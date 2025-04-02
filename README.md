@@ -181,6 +181,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Author
 
 Ali Salem <admin@alisalem.me>
-[LinkedIn] https://www.linkedin.com/in/alielsayedsalem/
 
-[Resume] https://alisalem.me/
+LinkedIn: https://www.linkedin.com/in/alielsayedsalem/
+
+Web: https://alisalem.me/
