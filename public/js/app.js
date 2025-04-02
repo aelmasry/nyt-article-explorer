@@ -144,7 +144,6 @@ async function searchArticles(page = 0) {
 }
 
 function displayArticles(articles) {
-    alert('huuu');
     const grid = document.getElementById('articlesGrid');
     grid.innerHTML = '';
 
@@ -264,12 +263,14 @@ async function toggleFavorite(articleId, title, url) {
 
         if (response.ok) {
             loadFavorites();
-            searchArticles(currentPage);
+            if (currentSearchQuery) {
+                searchArticles(currentPage);
+            }
         } else {
             alert(data.error);
         }
     } catch (error) {
-        alert('An error occurred while updating favorites');
+        alert('An error occurred while toggling favorite');
     }
 }
 
@@ -280,4 +281,33 @@ async function removeFavorite(articleId) {
         const response = await fetch(`${API_BASE_URL}/favorites?article_id=${articleId}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            loadFavorites();
+            if (currentSearchQuery) {
+                searchArticles(currentPage);
+            }
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        alert('An error occurred while removing favorite');
+    }
+}
+
+function isFavorite(articleId) {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    return favorites.some(f => f.article_id === articleId);
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        searchArticles();
+    }
+});

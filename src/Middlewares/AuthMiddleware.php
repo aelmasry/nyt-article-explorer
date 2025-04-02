@@ -47,14 +47,17 @@ class AuthMiddleware {
     }
     
     /**
-     * تطبيق المصادقة ثم استمرار التنفيذ إذا نجحت
+     * Apply authentication and continue execution if successful
+     * @param callable $next The next middleware or handler function
+     * @param array $options Additional options like required roles
+     * @return callable A function that applies authentication
      */
     public function authenticate(callable $next, array $options = []): callable {
         return function () use ($next, $options) {
             $payload = $this->handle();
             
             if ($payload !== null) {
-                // إذا كانت هناك أدوار مطلوبة، تحقق منها
+                // If roles are required, check them
                 if (!empty($options['roles'])) {
                     $userRole = $payload['role'] ?? 'user';
                     
@@ -70,7 +73,7 @@ class AuthMiddleware {
                     }
                 }
                 
-                // تمرير معلومات المستخدم إلى الدالة التالية
+                // Pass user data to the next function
                 call_user_func($next, $payload);
             }
         };

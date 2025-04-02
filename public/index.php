@@ -19,11 +19,6 @@ $dotenv->load();
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-// If the request is for a file or directory, serve it directly
-if (is_file(__DIR__ . $path) || is_dir(__DIR__ . $path)) {
-    return false; // Let Apache handle the file
-}
-
 // If the request is for the API
 if (strpos($path, '/api') === 0) {
     // Set API headers
@@ -50,7 +45,7 @@ if (strpos($path, '/api') === 0) {
     $path = substr($path, 4);
 
     // Apply rate limiting to all API requests
-    $rateLimitMiddleware->handle();
+    // $rateLimitMiddleware->handle();
 
     // Define API routes
     $routes = [

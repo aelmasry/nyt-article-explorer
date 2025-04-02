@@ -49,13 +49,15 @@ class NYTApiService
         ];
 
         $cacheKey = $this->generateCacheKey('search', $params);
-        $cachedResponse = $this->getCachedResponse($cacheKey);
+        // $cachedResponse = $this->getCachedResponse($cacheKey);
 
-        if ($cachedResponse) {
-            $this->logger->info('Retrieved cached NYT API response', ['query' => $query, 'page' => $page]);
-            return $cachedResponse;
-        }
+        // if ($cachedResponse) {
+        //     $this->logger->info('Retrieved cached NYT API response', ['query' => $query, 'page' => $page]);
+        //     return $cachedResponse;
+        // }
 
+        echo '<pre>'.print_r(($params)).'</pre>';
+        die;
         $url = $this->buildUrl($params);
         $response = $this->makeRequest($url);
         $this->cacheResponse($cacheKey, $response);
