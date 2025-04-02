@@ -1,0 +1,25 @@
+# Author: Ali Salem <admin@alisalem.me>
+# NYT Article Explorer Docker Compose
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8009:80"
+    volumes:
+      - .:/var/www/html
+      - sqlite_data:/var/www/html/database
+    environment:
+      - DB_PATH=/var/www/html/database/nyt_explorer.sqlite
+      - JWT_SECRET=${JWT_SECRET}
+      - NYT_API_KEY=${NYT_API_KEY}
+      - NYT_API_BASE_URL=https://api.nytimes.com/svc/search/v2/articlesearch.json
+      - CACHE_DURATION=3600
+      - RATE_LIMIT_MAX_REQUESTS=5
+      - RATE_LIMIT_WINDOW_MINUTES=5
+      - JWT_EXPIRY=86400
+
+volumes:
+  sqlite_data: 

@@ -1,0 +1,17 @@
+# Author: Ali Salem <admin@alisalem.me>
+# URL rewriting rules for NYT Article Explorer
+
+RewriteEngine On
+RewriteBase /
+
+# If the request is for a file or directory, serve it directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# If the request is for the API, route to index.php
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ index.php [QSA,L]
+
+# For all other routes, serve index.php
+RewriteRule ^(.*)$ index.php [QSA,L] 

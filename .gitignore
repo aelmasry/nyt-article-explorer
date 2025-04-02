@@ -1,0 +1,8 @@
+
+.qodo
+/vendor/
+/logs/*
+!logs/.gitkeep
+/.env
+/database/*.sqlite
+composer.lock
