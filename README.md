@@ -1,6 +1,11 @@
 # NYT Article Explorer
 
-A web application that allows users to search and explore New York Times articles, with features for saving favorites and user authentication.
+Use of the following API:
+New York Times Developer API “https://developer.nytimes.com/”
+to allow users to search, view, and save favorite articles.
+This task is designed to simulate a real-world backend project suitable for mobile
+integration and web.
+
 
 ## Features
 
@@ -17,7 +22,6 @@ A web application that allows users to search and explore New York Times article
 ## Requirements
 
 - PHP 8.1 or higher
-- MySQL 5.7 or higher
 - Docker and Docker Compose
 - New York Times API key
 
@@ -177,3 +181,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Author
 
 Ali Salem <admin@alisalem.me>
+[LinkedIn] https://www.linkedin.com/in/alielsayedsalem/
+
+[Resume] https://alisalem.me/
