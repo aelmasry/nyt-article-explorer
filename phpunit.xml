@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests</directory>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">./tests</directory>
+            <directory suffix=".php">./vendor</directory>
+        </exclude>
+    </coverage>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="JWT_SECRET" value="test_secret_key"/>
+        <env name="JWT_EXPIRY" value="3600"/>
+        <env name="NYT_API_KEY" value="test_api_key"/>
+        <env name="NYT_API_BASE_URL" value="https://api.nytimes.com/svc/search/v2/articlesearch.json"/>
+        <env name="CACHE_DURATION" value="3600"/>
+        <env name="RATE_LIMIT_MAX_REQUESTS" value="100"/>
+        <env name="RATE_LIMIT_WINDOW_MINUTES" value="60"/>
+    </php>
+</phpunit> 

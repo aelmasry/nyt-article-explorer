@@ -45,7 +45,7 @@ if (strpos($path, '/api') === 0) {
     $path = substr($path, 4);
 
     // Apply rate limiting to all API requests
-    // $rateLimitMiddleware->handle();
+    $rateLimitMiddleware->handle();
 
     // Define API routes
     $routes = [

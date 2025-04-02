@@ -2,92 +2,114 @@
 
 namespace App\Utils;
 
-use App\Config\Database;
-use PDO;
+use App\Config\Logger as LoggerConfig;
 
 class Logger
 {
-    const LEVEL_INFO = 'INFO';
-    const LEVEL_WARNING = 'WARNING';
-    const LEVEL_ERROR = 'ERROR';
-    const LEVEL_DEBUG = 'DEBUG';
-
-    private PDO $db;
-    private string $logFile;
+    private $config;
+    private $logLevels = [
+        'emergency' => 0,
+        'alert'     => 1,
+        'critical'  => 2,
+        'error'     => 3,
+        'warning'   => 4,
+        'notice'    => 5,
+        'info'      => 6,
+        'debug'     => 7
+    ];
 
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
-        $this->logFile = dirname(__DIR__, 2) . '/logs/app.log';
-
-        // التأكد من وجود مجلد السجلات
-        $logDir = dirname($this->logFile);
-        if (!is_dir($logDir)) {
-            mkdir($logDir, 0755, true);
-        }
+        $this->config = LoggerConfig::getInstance();
     }
 
     /**
-     * تسجيل رسالة في قاعدة البيانات وملف السجل
+     * Log an emergency message
      */
-    public function log(string $level, string $message, array $context = []): void
+    public function emergency(string $message, array $context = []): void
     {
-        $timestamp = date('Y-m-d H:i:s');
-        $contextJson = !empty($context) ? json_encode($context) : null;
-
-        // تسجيل في قاعدة البيانات
-        $stmt = $this->db->prepare("
-            INSERT INTO logs (level, message, context, timestamp) 
-            VALUES (:level, :message, :context, :timestamp)
-        ");
-
-        $stmt->execute([
-            ':level' => $level,
-            ':message' => $message,
-            ':context' => $contextJson,
-            ':timestamp' => $timestamp
-        ]);
-
-        // تسجيل في ملف
-        $logLine = "[$timestamp] [$level] $message";
-        if (!empty($context)) {
-            $logLine .= " " . json_encode($context);
-        }
-        $logLine .= PHP_EOL;
-
-        file_put_contents($this->logFile, $logLine, FILE_APPEND);
+        $this->log('emergency', $message, $context);
     }
 
     /**
-     * تسجيل رسالة معلومات
+     * Log an alert message
      */
-    public function info(string $message, array $context = []): void
+    public function alert(string $message, array $context = []): void
     {
-        $this->log(self::LEVEL_INFO, $message, $context);
+        $this->log('alert', $message, $context);
     }
 
     /**
-     * تسجيل رسالة تحذير
+     * Log a critical message
      */
-    public function warning(string $message, array $context = []): void
+    public function critical(string $message, array $context = []): void
     {
-        $this->log(self::LEVEL_WARNING, $message, $context);
+        $this->log('critical', $message, $context);
     }
 
     /**
-     * تسجيل رسالة خطأ
+     * Log an error message
      */
     public function error(string $message, array $context = []): void
     {
-        $this->log(self::LEVEL_ERROR, $message, $context);
+        $this->log('error', $message, $context);
     }
 
     /**
-     * تسجيل رسالة تصحيح
+     * Log a warning message
+     */
+    public function warning(string $message, array $context = []): void
+    {
+        $this->log('warning', $message, $context);
+    }
+
+    /**
+     * Log a notice message
+     */
+    public function notice(string $message, array $context = []): void
+    {
+        $this->log('notice', $message, $context);
+    }
+
+    /**
+     * Log an info message
+     */
+    public function info(string $message, array $context = []): void
+    {
+        $this->log('info', $message, $context);
+    }
+
+    /**
+     * Log a debug message
      */
     public function debug(string $message, array $context = []): void
     {
-        $this->log(self::LEVEL_DEBUG, $message, $context);
+        $this->log('debug', $message, $context);
+    }
+
+    /**
+     * Log a message at the specified level
+     */
+    private function log(string $level, string $message, array $context = []): void
+    {
+        if ($this->logLevels[$level] > $this->logLevels[$this->config->getLogLevel()]) {
+            return;
+        }
+
+        $timestamp = date('Y-m-d H:i:s');
+        $logMessage = sprintf(
+            "[%s] %s: %s %s\n",
+            $timestamp,
+            strtoupper($level),
+            $message,
+            !empty($context) ? json_encode($context) : ''
+        );
+
+        file_put_contents(
+            $this->config->getLogPath(),
+            $logMessage,
+            FILE_APPEND
+        );
     }
 
     /**
