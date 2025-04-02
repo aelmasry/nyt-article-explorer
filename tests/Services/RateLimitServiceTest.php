@@ -35,13 +35,26 @@ class RateLimitServiceTest extends TestCase
         $ipAddress = '127.0.0.1';
         $token = null;
         
-        // Mock empty result for first query
+        // For newer PHPUnit versions, replace withConsecutive with separate expects calls
         $this->mockStatement->expects($this->exactly(2))
             ->method('execute')
-            ->withConsecutive(
-                [$this->equalTo([$ipAddress, $token, $token])],
-                [$this->equalTo([$ipAddress, $token, $this->matchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/), $this->matchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)])]
-            );
+            ->willReturnCallback(function ($args) use ($ipAddress, $token) {
+                static $callCount = 0;
+                $callCount++;
+                
+                if ($callCount === 1) {
+                    // First call validation
+                    $this->assertEquals([$ipAddress, $token, $token], $args);
+                } else {
+                    // Second call validation - using assertMatchesRegularExpression for date format
+                    $this->assertEquals($ipAddress, $args[0]);
+                    $this->assertEquals($token, $args[1]);
+                    $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $args[2]);
+                    $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $args[3]);
+                }
+                
+                return true;
+            });
             
         $this->mockStatement->expects($this->once())
             ->method('fetch')
@@ -73,12 +86,21 @@ class RateLimitServiceTest extends TestCase
             'last_request_at' => $now
         ];
         
+        // For newer PHPUnit versions, replace withConsecutive with willReturnCallback
         $this->mockStatement->expects($this->exactly(2))
             ->method('execute')
-            ->withConsecutive(
-                [$this->equalTo([$ipAddress, $token, $token])],
-                [$this->equalTo([$now, $ipAddress, $token, $token])]
-            );
+            ->willReturnCallback(function ($args) use ($ipAddress, $token, $now) {
+                static $callCount = 0;
+                $callCount++;
+                
+                if ($callCount === 1) {
+                    $this->assertEquals([$ipAddress, $token, $token], $args);
+                } else {
+                    $this->assertEquals([$now, $ipAddress, $token, $token], $args);
+                }
+                
+                return true;
+            });
             
         $this->mockStatement->expects($this->once())
             ->method('fetch')
@@ -152,4 +174,4 @@ class RateLimitServiceTest extends TestCase
         
         // No assertion needed as we're just verifying the mock was called correctly
     }
-} 
+}
